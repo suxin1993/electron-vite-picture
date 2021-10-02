@@ -36,11 +36,11 @@ function createWindow(e) {
     fullscreen: false,
     frame: false,
     webPreferences: {
-      webSecurity: false,
-      nodeIntegration:true,
+      webSecurity: false,//使用file://协议
+      nodeIntegration:true,//使用nodeIntegration 为true不起作用的时候可以将contextIsolation改为false
       nodeIntegrationInWorker: true,
       nodeIntegrationInSubframes: true,
-      contextIsolation:false,
+      contextIsolation:false,//electron13之后默认为false
       enableRemoteModule:true,
     }
     // titleBarStyle: 'customButtonsOnHover'
