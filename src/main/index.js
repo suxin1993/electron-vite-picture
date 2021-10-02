@@ -41,6 +41,7 @@ function createWindow(e) {
       nodeIntegrationInWorker: true,
       nodeIntegrationInSubframes: true,
       contextIsolation:false,
+      enableRemoteModule:true,
     }
     // titleBarStyle: 'customButtonsOnHover'
   })
@@ -75,8 +76,6 @@ const {
 
 //打开文件
 ipcMain.on('open-message', function (e, arg) {
-    console.error(arg)
-    console.error(e)
     dialog.showOpenDialog(mainWindow, {  properties: ['openFile', 'openDirectory']
 }).then(result => {  console.log(result.canceled);  console.log(result.filePaths);
   let files=result.filePaths

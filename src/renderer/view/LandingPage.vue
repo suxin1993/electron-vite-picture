@@ -2,8 +2,9 @@
   <div id="photos" class="photos-box" style="width:100%;">
     <div  class="iconfont iconic_live_cover_change  add" @click="open()"></div>
     <div class="flex-wrap-left">
-    <div class="item-img  " v-for="(item,index ) in data" :key="index">
+    <div class="item-img  flex-colume-center " v-for="(item,index ) in data" :key="index">
       <img ref="img" :src="item"    @click="init()">
+      <div @click="toOpenWidnows(index)">filePath</div>
     </div>
     </div>
   </div>
@@ -13,14 +14,21 @@
   import viewerjs from 'viewerjs'
   
   const {
-    ipcRenderer: ipc
+    ipcRenderer
   } = require('electron');
+   const {
+    shell
+  } = require('electron');
+  const {
+    remote
+  } = window.require('electron');
   var viewer = null;
   export default {
     name: 'LandingPage',
     data() {
       return {
         data: [],
+        filePath:[],
         isshow: false,
         logShow:true,
       }
@@ -81,14 +89,24 @@
         var _this = this;
         _this.reset();
        _this.logShow=false
-        ipc.send("open-message");
+        ipcRenderer.send("open-message");
+      },
+      toOpenWidnows(index){
+        let file =this.filePath[index]
+      //  let win= remote.getCurrentWindow()
+      console.error(remote)
+      shell.showItemInFolder(file)
+      return 
+        remote.dialog.showOpenDialog(null, {  title:'info',defaultPath:file, properties: ['openFile', 'multSelections']
+}).then(result => { })
       }
     },
     mounted() {
       var _this = this
-      ipc.on('files-reply', function (event, arg) {
+      ipcRenderer.on('files-reply', function (event, arg) {
         var tmp = [];
         for (var i in arg) {
+          _this.filePath.push(arg[i])
           tmp.push('file:///' + arg[i].replace(/\\/g, "/"));
         }
         _this.data = tmp;
@@ -125,15 +143,16 @@
   .add {
     font-size: 20px;
     margin-top: 50px;
+    margin-left: 50px;
     cursor: pointer;
   }
 
    
   .item-img {
-    max-width: 200px;
+    width: 200px;
+    margin:  10px 0 10px 0;
     img {
-      width: 100%;
-      height: 100%;
+      max-width: 100%;
     }
   }
 </style>
