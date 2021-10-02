@@ -1,9 +1,10 @@
 <template>
   <div id="photos" class="photos-box" style="width:100%;">
-    <div  id="logo" @click="open()"></div>
-    <div class=""></div>
-    <div class="item-img" v-for="(item,index ) in data" :key="index">
+    <div  class="iconfont iconic_live_cover_change  add" @click="open()"></div>
+    <div class="flex-wrap-left">
+    <div class="item-img  " v-for="(item,index ) in data" :key="index">
       <img ref="img" :src="item"    @click="init()">
+    </div>
     </div>
   </div>
 </template>
@@ -30,7 +31,6 @@
         viewer = new viewerjs(document.getElementById('photos'), {
           zoomRatio: 0.05,
           interval: 3000,
-          inline: true,
           minZoomRatio: 0.25,
           maxZoomRatio: 2,
           button: true,
@@ -54,10 +54,9 @@
             // this.viewer.zoomTo(1).rotateTo(180);
           },
           hide: function (e) {
-             console.error(e)
+              console.error(e)
               viewer.destroy()
-            viewer = undefined
-              _this.logShow=true
+              viewer = undefined
           },
           
           ready: function () {
@@ -68,13 +67,10 @@
         viewer.show()
       },
       reset() {
-        console.error(document.getElementsByClassName('viewer-container'))
         if (document.getElementsByClassName('viewer-container').length > 0) {
           // document.getElementsByClassName('viewer-container')[0].parentNode.removeChild(document.getElementsByClassName(
           //   'viewer-container')[0]);
-          viewer.destroy();
-
-         
+          viewer.destroy()
         }
         // if(viewer){
         //   viewer.destroy();
@@ -114,18 +110,7 @@
 </style>
 
 <style scoped lang="less">
-  #logo{
-    background:url('../assets/images/bg.jpg') no-repeat;
-    width:600px;
-    height:180px;
-    margin:0 auto;
-    position: relative;
-    top:50%;
-    margin-top:-90px;
-    cursor:pointer;
 
-
-  }
   #photos {
     width: 100%;
     height: 100%;
@@ -137,21 +122,18 @@
     overflow: auto;
     background: #292a2b;
   }
-
-  #photos .item .tit {
-    position: absolute;
-    color: #fff;
-    bottom: 0;
-    background: #000;
-    width: 100%;
-    opacity: 0.8;
-    font-size: 14px;
-    padding: 5px;
-    -webkit-transition: all 0.2s;
-    transition: all 0.2s;
-    z-index: 10;
+  .add {
+    font-size: 20px;
+    margin-top: 50px;
+    cursor: pointer;
   }
+
+   
   .item-img {
-    margin-top: 500px;
+    max-width: 200px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
   }
 </style>

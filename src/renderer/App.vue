@@ -2,7 +2,6 @@
   <div class="main-container">
     <layout-header></layout-header>
     <div class="layout-section">
-      <!-- <layout-sidetools></layout-sidetools> -->
       <layout-container>
         <transition name="component-fade" mode="out-in">
           <router-view></router-view>
