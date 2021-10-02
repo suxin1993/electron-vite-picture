@@ -1,7 +1,10 @@
-node_modules
-dist
-yarn-error.log
 .DS_Store
-
-package-lock.json
-yarn.lock
+dist/electron/*
+dist/web/*
+build/*
+!build/icons
+node_modules/
+npm-debug.log
+npm-debug.log.*
+thumbs.db
+!.gitkeep
