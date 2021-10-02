@@ -1,8 +1,7 @@
 {
-  "name": "image-viewer",
-  "productName": "GImageViewer",
+  "name": "electron-image-viewer",
   "version": "1.0.0",
-  "author": "Evan.G",
+  "author": "",
   "description": "一个图片浏览器",
   "license": null,
   "main": "./dist/electron/main.js",
