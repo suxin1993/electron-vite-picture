@@ -1,8 +1,8 @@
 <!--
  * @Author: your name
  * @Date: 2021-10-08 11:43:58
- * @LastEditTime: 2021-10-08 19:09:15
- * @LastEditors: your name
+ * @LastEditTime: 2021-10-08 20:15:59
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /electron-vite-picture/src/renderer/components/layout-header.vue
 -->
@@ -28,8 +28,5 @@ export default {
             ipcRenderer.send(type);
         }
     },
-    mounted () {
-
-    }
 }
 </script>

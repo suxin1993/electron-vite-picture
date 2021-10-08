@@ -12,16 +12,8 @@
 
 <script>
 import viewerjs from 'viewerjs'
-
-const {
-    ipcRenderer
-} = require('electron');
-const {
-    shell
-} = require('electron');
-const {
-    remote
-} = window.require('electron');
+const { ipcRenderer, shell } = require('electron');
+const { remote } = window.require('electron');
 var viewer = null;
 export default {
     name: 'LandingPage',
@@ -77,9 +69,6 @@ export default {
                 //   'viewer-container')[0]);
                 viewer.destroy()
             }
-            // if(viewer){
-            //   viewer.destroy();
-            // }
         },
         open () {
             this.reset();
@@ -87,9 +76,8 @@ export default {
         },
         toOpenWidnows (index) {
             let file = this.filePath[index].filePath
-            //  let win= remote.getCurrentWindow()
-            console.error(remote)
             shell.showItemInFolder(file)
+            //  let win= remote.getCurrentWindow()
             return
             remote.dialog.showOpenDialog(null, {
                 title: 'info', defaultPath: file, properties: ['openFile', 'multSelections']
@@ -98,17 +86,13 @@ export default {
     },
     mounted () {
         ipcRenderer.on('files-reply', (event, arg) => {
-            console.error(arg)
             for (let i in arg) {
                 arg[i].filePathF = 'file:///' + arg[i].filePath.replace(/\\/g, "/")
                 this.filePath.push(arg[i])
 
             }
-            console.error(this.filePath)
-
             this.reset()
         });
-
     }
 }
 </script>
