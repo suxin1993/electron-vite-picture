@@ -91,6 +91,8 @@ export default {
     },
     mounted () {
         ipcRenderer.on('files-reply', (event, arg) => {
+            // console.error(arg)
+            this.filePath = []
             for (let i in arg) {
                 arg[i].filePathF = 'file:///' + arg[i].filePath.replace(/\\/g, "/")
                 this.filePath.push(arg[i])

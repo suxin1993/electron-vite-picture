@@ -77,7 +77,7 @@ const {
 //打开文件
 ipcMain.on('open-message', function(e, arg) {
     dialog.showOpenDialog(mainWindow, {
-        properties: ['openFile', 'openDirectory']
+        properties: ['openDirectory']
     }).then(result => {
         console.log(result.canceled);
         console.log(result.filePaths);
@@ -86,14 +86,30 @@ ipcMain.on('open-message', function(e, arg) {
             var f = files[0];
             // var filePath = f.replace(f.split('/')[f.split('/').length-1],"");
             fileDisplay(f, function(fileList) {
+                console.error(f)
                 e.sender.send('files-reply', fileList);
             });
-
+            let fsWait = false;
+            // fs.watch 如何取消
+            fs.watch(f, (event, filename) => {
+                if (filename) {
+                    if (fsWait) return;
+                    fsWait = setTimeout(() => {
+                        fsWait = false;
+                    }, 1000);
+                    console.log(`${filename} file ${event}`);
+                    if (event == 'rename') {
+                        fileDisplay(f, function(fileList) {
+                            e.sender.send('files-reply', fileList);
+                        });
+                    }
+                    // 性能不好，有变化，直接遍历
+                }
+            });
         }
     }).catch(err => {
         console.log(err)
     })
-
     // dialog.showOpenDialog({
     //     properties: ['openFile', 'openDirectory']
     // }, function (files) {
