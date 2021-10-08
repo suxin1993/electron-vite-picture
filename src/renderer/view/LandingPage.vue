@@ -22,6 +22,11 @@ export default {
             filePath: [],
         }
     },
+    computed: {
+        filePaths () {
+            return this.$store.state.File.filePath
+        }
+    },
     methods: {
         init () {
             let _this = this;
@@ -89,8 +94,8 @@ export default {
             for (let i in arg) {
                 arg[i].filePathF = 'file:///' + arg[i].filePath.replace(/\\/g, "/")
                 this.filePath.push(arg[i])
-
             }
+            this.$store.dispatch("Counter/someAsyncTask", this.filePath)
             this.reset()
         });
     }
