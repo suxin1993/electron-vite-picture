@@ -22,7 +22,7 @@
     <script>
       const {
       ipcRenderer
-      } = require('electron').ipcRenderer;
+      } = require('electron');
       let dropBox;
   
       window.onload = function () {
@@ -51,7 +51,7 @@
           fileSize:e.dataTransfer.files[0].size
         }
         
-        ipc.send('files-message',JSON.stringify(obj));
+        ipcRenderer.send('files-message',JSON.stringify(obj));
 
       }
   
