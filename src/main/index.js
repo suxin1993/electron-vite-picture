@@ -3,6 +3,27 @@ import {
     BrowserWindow,
     ipcMain
 } from 'electron'
+// 子进程
+let child_process = require('child_process');
+
+const createChild = ()=>{
+    let child = child_process.fork('src/main/child/child.js');
+    child.on('message', function(m){
+        console.log('message from child: ' + JSON.stringify(m));
+        if(m.dirPath){
+              fileDisplay(m.dirPath, function(fileList) {
+                            console.error(fileList)
+                            mainWindow.send('files-reply', fileList);
+                        });
+        }
+    }); 
+    child.send({from: 'parent',pid:process.pid});
+    child.on('exit', code => {
+        console.log("关闭子进程")
+        console.log('exit:', code);
+    });
+    return child
+}
 
 
 
@@ -89,23 +110,26 @@ ipcMain.on('open-message', function(e, arg) {
                 console.error(f)
                 e.sender.send('files-reply', fileList);
             });
-            let fsWait = false;
-            // fs.watch 如何取消
-            fs.watch(f, (event, filename) => {
-                if (filename) {
-                    if (fsWait) return;
-                    fsWait = setTimeout(() => {
-                        fsWait = false;
-                    }, 1000);
-                    console.log(`${filename} file ${event}`);
-                    if (event == 'rename') {
-                        fileDisplay(f, function(fileList) {
-                            e.sender.send('files-reply', fileList);
-                        });
-                    }
-                    // 性能不好，有变化，直接遍历
-                }
-            });
+           
+            // 通过关闭子进程的方式，取消fs.watch
+            console.log(f)
+            let child = createChild()
+            child.send({dirPath:f});
+            // fs.watch(f, (event, filename) => {
+            //     if (filename) {
+            //         if (fsWait) return;
+            //         fsWait = setTimeout(() => {
+            //             fsWait = false;
+            //         }, 1000);
+            //         console.log(`${filename} file ${event}`);
+            //         if (event == 'rename') {
+            //             fileDisplay(f, function(fileList) {
+            //                 e.sender.send('files-reply', fileList);
+            //             });
+            //         }
+            //         // 性能不好，有变化，直接遍历
+            //     }
+            // });
         }
     }).catch(err => {
         console.log(err)
