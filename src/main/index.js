@@ -112,8 +112,10 @@ ipcMain.on('open-message', function(e, arg) {
             });
            
             // 通过关闭子进程的方式，取消fs.watch
+            // 需要判断子进程是否存在
             console.log(f)
             let child = createChild()
+            console.log(child.pid)
             child.send({dirPath:f});
             // fs.watch(f, (event, filename) => {
             //     if (filename) {
