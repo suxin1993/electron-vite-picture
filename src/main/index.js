@@ -139,11 +139,12 @@ ipcMain.on('open-message', function(e, arg) {
         console.log(err)
     })
 });
-const { pathBasename } = require('src/renderer/utils/node-operate-folder.js')
+const { pathParsePath } = require('../renderer/utils/node-operate-folder')
 // 创建的时候，监控文件夹
 ipcMain.on('files-monitoring', (e, arg) => {
     // console.error(arg)
-    // console.error(pathBasename(arg[0].filePath))
+    console.error(pathParsePath(arg[0].filePath))
+    monitoring(pathParsePath(arg[0].filePath))
 
 })
 

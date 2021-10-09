@@ -274,6 +274,14 @@ exports.pathBasefilename = function(dir) {
     return paths.basename(dir, ext)
 }
 /**
+ * 获取文件名父路径
+ * @param {string} dir 路径
+ */
+exports.pathParsePath = function(dir) {
+    let dirs = paths.parse(dir).dir; //拿到上级路径
+    return dirs
+}
+/**
  * 拼接路径
  * @param {string} dir 路径
  */
