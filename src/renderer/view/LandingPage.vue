@@ -1,10 +1,14 @@
 <template>
     <div id="photos" class="photos-box" style="width:100%;">
-        <div class="iconfont iconic_live_cover_change  add" @click="open()"></div>
+        <div class="flex-between">
+            <div class="iconfont iconic_live_cover_change  add" @click="open()"></div>
+            <div class="iconfont iconic_tips add" @click="clear()"></div>
+        </div>
         <div class="flex-wrap-left">
-            <div class="item-img  flex-colume-center " v-for="(item,index ) in filePath" :key="index">
+            <div @contextmenu="onSelectItem" class="item-img  flex-colume-center " v-for="(item,index ) in filePath" :key="index">
                 <img ref="img " class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
-                <div class="img-list pointer-cursor text-overflow-ellipsis" @click="toOpenWidnows(index)">{{item.filename}}</div>
+                <div class="img-list pointer-cursor text-overflow-ellipsis" @click="toOpenWidnows(index)">
+                    {{item.filename}}</div>
             </div>
         </div>
     </div>
@@ -79,6 +83,14 @@ export default {
             this.reset();
             ipcRenderer.send("open-message");
         },
+        clear () {
+            this.reset();
+            this.filePath = []
+            localStorage.setItem('fileList', JSON.stringify(this.filePath))
+        },
+        onSelectItem (e) {
+            console.error(e)
+        },
         toOpenWidnows (index) {
             let file = this.filePath[index].filePath
             shell.showItemInFolder(file)
@@ -97,7 +109,6 @@ export default {
         }
     },
     mounted () {
-
         ipcRenderer.on('files-reply', (event, arg) => {
             // console.error(arg)
             this.filePath = []
@@ -136,8 +147,7 @@ export default {
 }
 .add {
     font-size: 20px;
-    margin-top: 50px;
-    margin-left: 50px;
+    margin: 60px 40px 20px 40px;
     cursor: pointer;
 }
 

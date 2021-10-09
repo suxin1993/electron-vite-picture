@@ -127,14 +127,17 @@ ipcMain.on('open-message', function(e, arg) {
     dialog.showOpenDialog(mainWindow, {
         properties: ['openDirectory']
     }).then(result => {
-        let files = result.filePaths
-        if (files) {
-            let f = files[0] //  let filePath = f.replace(f.split('/')[f.split('/').length-1],"");
-            fileDisplay(f, function(fileList) {
-                e.sender.send('files-reply', fileList);
-            });
-            monitoring(f)
+        if (!result.canceled) {
+            let files = result.filePaths
+            if (files) {
+                let f = files[0] //  let filePath = f.replace(f.split('/')[f.split('/').length-1],"");
+                fileDisplay(f, function(fileList) {
+                    e.sender.send('files-reply', fileList);
+                });
+                monitoring(f)
+            }
         }
+
     }).catch(err => {
         console.log(err)
     })
