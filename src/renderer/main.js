@@ -10,6 +10,7 @@ import './utils/viewer.min.css'
 import './utils/animate.min.css'
 import Toast from './components/prototypeComponents/toast/toast'
 import Queue from './utils/componentQueue'
+import './components/globalcomponents/globalComent'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.prototype.$toast = Toast
