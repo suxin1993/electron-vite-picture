@@ -1,42 +1,33 @@
-const fs =require('fs')
+/*
+ * @Author: your name
+ * @Date: 2021-10-09 10:24:50
+ * @LastEditTime: 2021-10-09 13:41:57
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /electron-vite-picture/src/main/child/child.js
+ */
+const fs = require('fs')
 let fsWait = false;
-
-process.on('message', function(m){
+process.on('message', function(m) {
     console.log('message from parent: ' + JSON.stringify(m));
-    if(m.dirPath){
+    if (m.dirPath) {
         fs.watch(m.dirPath, (event, filename) => {
-                if (filename) {
-                    if (fsWait) return;
-                    fsWait = setTimeout(() => {
-                        fsWait = false;
-                    }, 1000);
-                    console.log(`${process.pid} name${filename} file ${event}`);
-                    if (event == 'rename') {
-                        process.send({dirPath:m.dirPath})
-                        // fileDisplay(f, function(fileList) {
-                        //     e.sender.send('files-reply', fileList);
-                        // });
-                    }
-                    // 性能不好，有变化，直接遍历
+            if (filename) {
+                if (fsWait) return;
+                fsWait = setTimeout(() => {
+                    fsWait = false;
+                }, 1000);
+                console.log(`${process.pid} name${filename} file ${event}`);
+                if (event == 'rename') {
+
+                    process.send({ dirPath: m.dirPath })
                 }
-            });
+                // 性能不好，有变化，直接遍历，fs模块，不停的IO读写
+            }
+        });
+    } else if (m.exit == 'exit') {
+        process.exit(process.pid)
     }
 });
 
-
-
-// fs.watch('C://software//code//Images-Viewer//src//renderer', (event, filename) => {
-//     if (filename) {
-     
-//         console.log(`${filename} file ${event}`);
-       
-//     }
-// });
-
-
-process.send({from: 'child',pid:process.pid})
-
-// setTimeout(()=>{
-//     console.log("关闭子进程")
-//     process.exit(process.pid)
-// },10000)
+process.send({ from: 'child', pid: process.pid })

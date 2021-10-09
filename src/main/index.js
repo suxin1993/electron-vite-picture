@@ -1,31 +1,9 @@
 import {
     app,
     BrowserWindow,
-    ipcMain
+    ipcMain,
+    dialog,
 } from 'electron'
-// 子进程
-let child_process = require('child_process');
-
-const createChild = ()=>{
-    let child = child_process.fork('src/main/child/child.js');
-    child.on('message', function(m){
-        console.log('message from child: ' + JSON.stringify(m));
-        if(m.dirPath){
-              fileDisplay(m.dirPath, function(fileList) {
-                            console.error(fileList)
-                            mainWindow.send('files-reply', fileList);
-                        });
-        }
-    }); 
-    child.send({from: 'parent',pid:process.pid});
-    child.on('exit', code => {
-        console.log("关闭子进程")
-        console.log('exit:', code);
-    });
-    return child
-}
-
-
 
 /**
  * Set `__static` path to static files in production
@@ -37,9 +15,8 @@ if (process.env.NODE_ENV !== 'development') {
 
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development' ?
-    `http://localhost:9080` :
+    `http://localhost:9085` :
     `file://${__dirname}/index.html`
-
 
 function createWindow(e) {
     /**
@@ -53,6 +30,7 @@ function createWindow(e) {
         // minHeight: 750,
         // minWidth: 1300,
         useContentSize: true,
+        backgroundColor: '#292a2b',
         resizable: true,
         fullscreen: false,
         frame: false,
@@ -66,8 +44,6 @@ function createWindow(e) {
         }
         // titleBarStyle: 'customButtonsOnHover'
     })
-
-
     mainWindow.loadURL(winURL)
     mainWindow.openDevTools()
     mainWindow.on('closed', () => {
@@ -84,71 +60,92 @@ ipcMain.on('max', e => {
         mainWindow.maximize()
     }
 });
-ipcMain.on('close', e => mainWindow.close());
+ipcMain.on('close', e => {
+    if (process.platform === 'darwin') {
+        app.quit()
+    } else if (mainWindow) {
+        mainWindow.close()
+    }
+});
+// 利用ipc让html标签获取主进程的方法,最小化,最大化,关闭
 
-
+// main.js start
 app.on('ready', createWindow)
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+        app.quit()
+    }
+})
+app.on('activate', (e) => {
+    if (mainWindow === null) {
+        createWindow();
+    }
+})
+// main.js end
+// 获取fs模块
 const fs = require('fs');
 const path = require('path');
 const dirpath = require('./dir').dirpath;
-const {
-    dialog
-} = require('electron');
+// 子进程
+let child_process = require('child_process');
+let child = null
+
+// 创建子进程
+const createChild = () => {
+    let child = child_process.fork('src/main/child/child.js');
+    child.on('message', function(m) {
+        console.log('message from child: ' + JSON.stringify(m));
+        if (m.dirPath) {
+            fileDisplay(m.dirPath, function(fileList) {
+                mainWindow.send('files-reply', fileList);
+            });
+        }
+    });
+    child.send({ from: 'parent', pid: process.pid });
+    child.on('exit', code => {
+        console.log("关闭子进程")
+        console.log('exit:', code);
+    });
+    return child
+}
+const monitoring = (f) => {
+    // 通过关闭子进程的方式，取消fs.watch
+    // 需要判断子进程是否存在
+    console.log(f)
+    console.error(child)
+    if (child) {
+        child.send({ exit: 'exit' });
+    }
+    child = createChild()
+    console.log(child.pid)
+    child.send({ dirPath: f });
+}
+
 
 //打开文件
 ipcMain.on('open-message', function(e, arg) {
     dialog.showOpenDialog(mainWindow, {
         properties: ['openDirectory']
     }).then(result => {
-        console.log(result.canceled);
-        console.log(result.filePaths);
         let files = result.filePaths
         if (files) {
-            var f = files[0];
-            // var filePath = f.replace(f.split('/')[f.split('/').length-1],"");
+            let f = files[0] //  let filePath = f.replace(f.split('/')[f.split('/').length-1],"");
             fileDisplay(f, function(fileList) {
-                console.error(f)
                 e.sender.send('files-reply', fileList);
             });
-           
-            // 通过关闭子进程的方式，取消fs.watch
-            // 需要判断子进程是否存在
-            console.log(f)
-            let child = createChild()
-            console.log(child.pid)
-            child.send({dirPath:f});
-            // fs.watch(f, (event, filename) => {
-            //     if (filename) {
-            //         if (fsWait) return;
-            //         fsWait = setTimeout(() => {
-            //             fsWait = false;
-            //         }, 1000);
-            //         console.log(`${filename} file ${event}`);
-            //         if (event == 'rename') {
-            //             fileDisplay(f, function(fileList) {
-            //                 e.sender.send('files-reply', fileList);
-            //             });
-            //         }
-            //         // 性能不好，有变化，直接遍历
-            //     }
-            // });
+            monitoring(f)
         }
     }).catch(err => {
         console.log(err)
     })
-    // dialog.showOpenDialog({
-    //     properties: ['openFile', 'openDirectory']
-    // }, function (files) {
-    //     console.error(files)
-    //     if (files) {
-    //         var f = files[0];
-    //         var filePath = f.replace(f.split('/')[f.split('/').length-1],"");
-    //         fileDisplay(filePath, function (fileList) {
-    //             e.sender.send('files-reply', fileList);
-    //         });
-    //     }
-    // })
 });
+const { pathBasename } = require('src/renderer/utils/node-operate-folder.js')
+// 创建的时候，监控文件夹
+ipcMain.on('files-monitoring', (e, arg) => {
+    // console.error(arg)
+    // console.error(pathBasename(arg[0].filePath))
+
+})
 
 //拖入文件
 ipcMain.on('files-message', function(e, arg) {
@@ -158,9 +155,9 @@ ipcMain.on('files-message', function(e, arg) {
     fileDisplay(filePath, function(fileList) {
         e.sender.send('files-reply', fileList);
     });
+    // 也需要监控
 });
-
-
+// 文件遍历
 function fileDisplay(filePath, callback) {
     //根据文件路径读取文件，返回文件列表
     fs.readdir(filePath, function(err, files) {
@@ -168,14 +165,14 @@ function fileDisplay(filePath, callback) {
             console.warn(err)
         } else {
             //遍历读取到的文件列表
-            var list = []
+            let list = []
             files.forEach(function(filename) {
                 //获取当前文件的绝对路径
-                var filedir = path.join(filePath, filename);
-                var isImg = function() {
-                    var res = false;
-                    var imgType = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'JPG', 'JPEG', 'PNG', 'GIF', 'ICO', 'svg'];
-                    for (var i in imgType) {
+                let filedir = path.join(filePath, filename);
+                let isImg = function() {
+                    let res = false;
+                    let imgType = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'JPG', 'JPEG', 'PNG', 'GIF', 'ICO', 'svg'];
+                    for (let i in imgType) {
                         if (filename.split(".")[1] == imgType[i]) {
                             res = true
                         }
@@ -183,27 +180,13 @@ function fileDisplay(filePath, callback) {
                     return res
                 }
                 if (isImg()) {
-
                     list.push({
                         filePath: filedir,
                         filename: path.basename(filedir),
                     })
                 }
             });
-            // console.error(list)
             callback(list);
         }
     });
 }
-
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
-})
-
-app.on('activate', (e) => {
-    if (mainWindow === null) {
-        createWindow();
-    }
-})

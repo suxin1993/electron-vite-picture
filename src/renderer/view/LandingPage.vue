@@ -4,7 +4,7 @@
         <div class="flex-wrap-left">
             <div class="item-img  flex-colume-center " v-for="(item,index ) in filePath" :key="index">
                 <img ref="img" :src="item.filePathF" @click="init()">
-                <div @click="toOpenWidnows(index)">{{item.filename}}</div>
+                <div class="img-list text-overflow-ellipsis" @click="toOpenWidnows(index)">{{item.filename}}</div>
             </div>
         </div>
     </div>
@@ -40,23 +40,23 @@ export default {
                     return decodeURIComponent(e.alt)
                 },
                 built: function (e) {
-                    console.error(e)
+                    // console.error(e)
                     // 2 methods are available here: "show" and "destroy".
                 },
                 show: function () {
                     viewer.update()
                 },
                 shown: function (e) {
-                    console.error(e)
+                    // console.error(e)
                     // 9 methods are available here: "hide", "view", "prev", "next", "play", "stop", "full", "exit" and "destroy".
                 },
                 viewed: function (e) {
-                    console.error(e)
+                    // console.error(e)
                     // All methods are available here except "show".
                     // this.viewer.zoomTo(1).rotateTo(180);
                 },
                 hide: function (e) {
-                    console.error(e)
+                    // console.error(e)
                     viewer.destroy()
                     viewer = undefined
                 },
@@ -89,7 +89,15 @@ export default {
             }).then(result => { })
         }
     },
+    created () {
+        if (localStorage.getItem('fileList')) {
+            this.filePath = JSON.parse(localStorage.getItem('fileList'))
+            // 并且需要监视
+            ipcRenderer.send("files-monitoring", this.filePath);
+        }
+    },
     mounted () {
+
         ipcRenderer.on('files-reply', (event, arg) => {
             // console.error(arg)
             this.filePath = []
@@ -99,6 +107,7 @@ export default {
             }
             this.$store.dispatch("Counter/someAsyncTask", this.filePath)
             this.reset()
+            localStorage.setItem('fileList', JSON.stringify(this.filePath))
         });
     }
 }
@@ -137,6 +146,10 @@ export default {
     margin: 10px;
     img {
         max-width: 100%;
+    }
+    .img-list {
+        width: 200px;
+        text-align: center;
     }
 }
 </style>
