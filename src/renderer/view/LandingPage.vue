@@ -4,18 +4,26 @@
             <div class="iconfont iconic_live_cover_change  iconfont-title" @click="open()"></div>
             <div class="iconfont iconic_tips iconfont-title" @click="clear()"></div>
         </div>
+        <div>
+            <span @click="toChangeType(item)" v-for="(item,index) in extType " :key="index">
+                {{item}}
+            </span>
+            <span @click="toReteType()"> 全部</span>
+        </div>
         <div class="flex-wrap-left">
-            <div @contextmenu="onSelectItem" class="item-img  flex-colume-center " v-for="(item,index ) in filePath" :key="index">
-                <img ref="img " class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
-                <div v-if="!item.edit" class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
-                    <span @click.stop="copy(item.filename)" class="iconfont copy-item iconic_dailytasks5"></span>{{item.filename}}
-                </div>
-                <div v-else>
-                    <input type="text" @change="changePhotoName(index)" v-model='item.filename'>
-                </div>
-                <div class="flex-between">
-                    <span @click="toEdit(index)" class="pointer-cursor">编辑</span>
-                    <span @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
+            <div v-for="(item,index ) in filePath" :key="index">
+                <div v-if="extInclude.includes(item.ext)" @contextmenu="onSelectItem" class="item-img  flex-colume-center ">
+                    <img ref="img " class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
+                    <div v-if="!item.edit" class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
+                        <span @click.stop="copy(item.filename)" class="iconfont copy-item iconic_dailytasks5"></span>{{item.filename}}
+                    </div>
+                    <div v-else>
+                        <input type="text" @change="changePhotoName(index)" v-model='item.filename'>
+                    </div>
+                    <div class="flex-between">
+                        <span @click="toEdit(index)" class="pointer-cursor">编辑</span>
+                        <span @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -32,6 +40,8 @@ export default {
     data () {
         return {
             filePath: [],
+            extType: {},
+            extInclude: [],
         }
     },
     computed: {
@@ -110,6 +120,14 @@ export default {
             this.filePath = []
             localStorage.setItem('fileList', JSON.stringify(this.filePath))
         },
+        toChangeType (ext) {
+            console.error(this.extInclude)
+            this.extInclude = []
+            this.extInclude.push(ext)
+        },
+        toReteType () {
+            this.extInclude = Object.keys(this.extType)
+        },
         onSelectItem (e) {
             console.error(e)
             this.$toast("右键")
@@ -137,6 +155,10 @@ export default {
             this.filePath = JSON.parse(localStorage.getItem('fileList'))
             // 并且需要监视
             ipcRenderer.send("files-monitoring", this.filePath);
+            this.filePath.forEach((item, index) => {
+                this.extType[item.ext] = item.ext
+            })
+            this.extInclude = Object.keys(this.extType)
         }
     },
     mounted () {
@@ -146,7 +168,9 @@ export default {
             for (let i in arg) {
                 arg[i].filePathF = 'file:///' + arg[i].filePath.replace(/\\/g, "/")
                 this.filePath.push(arg[i])
+                this.extType[arg[i].ext] = arg[i].ext
             }
+            this.extInclude = Object.keys(this.extType)
             this.$store.dispatch("Counter/someAsyncTask", this.filePath)
             this.reset()
             localStorage.setItem('fileList', JSON.stringify(this.filePath))
