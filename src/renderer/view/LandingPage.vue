@@ -90,6 +90,7 @@ export default {
         },
         onSelectItem (e) {
             console.error(e)
+            this.$toast("右键")
         },
         toOpenWidnows (index) {
             let file = this.filePath[index].filePath
