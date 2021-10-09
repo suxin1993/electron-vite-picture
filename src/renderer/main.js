@@ -11,7 +11,6 @@ import Toast from './components/prototypeComponents/toast/toast'
 
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
-Vue.config.productionTip = false
 Vue.prototype.$toast = Toast
 
 window.myApp = {}

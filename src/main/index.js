@@ -145,21 +145,30 @@ ipcMain.on('open-message', function(e, arg) {
 const { pathParsePath } = require('../renderer/utils/node-operate-folder')
 // 创建的时候，监控文件夹
 ipcMain.on('files-monitoring', (e, arg) => {
-    // console.error(arg)
-    console.error(pathParsePath(arg[0].filePath))
-    monitoring(pathParsePath(arg[0].filePath))
-
+    if (arg[0] && arg[0].filePath) {
+        monitoring(pathParsePath(arg[0].filePath))
+    }
 })
 
 //拖入文件
 ipcMain.on('files-message', function(e, arg) {
     let filePath = path.resolve(dirpath);
     filePath = (JSON.parse(arg)).filePath;
-    filePath = path.join((JSON.parse(arg)).filePath, (JSON.parse(arg)).fileName)
-    fileDisplay(filePath, function(fileList) {
-        e.sender.send('files-reply', fileList);
-    });
-    // 也需要监控
+    let oldPath = path.join((JSON.parse(arg)).filePath, (JSON.parse(arg)).fileName)
+    // 只能是文件夹
+    const stats = fs.statSync(oldPath);
+    if (stats.isDirectory()) {
+        filePath = oldPath
+        fileDisplay(filePath, function(fileList) {
+            e.sender.send('files-reply', fileList);
+        });
+        monitoring(filePath)
+    } else {
+        fileDisplay(filePath, function(fileList) {
+            e.sender.send('files-reply', fileList);
+        });
+        monitoring(filePath)
+    }
 });
 // 文件遍历
 function fileDisplay(filePath, callback) {
