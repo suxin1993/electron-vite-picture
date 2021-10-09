@@ -3,17 +3,17 @@
         <div class="iconfont iconic_live_cover_change  add" @click="open()"></div>
         <div class="flex-wrap-left">
             <div class="item-img  flex-colume-center " v-for="(item,index ) in filePath" :key="index">
-                <img ref="img" :src="item.filePathF" @click="init()">
-                <div class="img-list text-overflow-ellipsis" @click="toOpenWidnows(index)">{{item.filename}}</div>
+                <img ref="img " class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
+                <div class="img-list pointer-cursor text-overflow-ellipsis" @click="toOpenWidnows(index)">{{item.filename}}</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import viewerjs from 'viewerjs'
 const { ipcRenderer, shell } = require('electron');
 const { remote } = window.require('electron');
+import viewerjs from "../utils/viewer.min.js"
 var viewer = null;
 export default {
     name: 'LandingPage',
