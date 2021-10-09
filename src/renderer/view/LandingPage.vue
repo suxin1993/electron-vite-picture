@@ -1,21 +1,22 @@
 <template>
-    <div id="photos" class="photos-box" style="width:100%;">
+    <div id="photos" class="photos-box">
         <div class="flex-between">
-            <div class="iconfont iconic_live_cover_change  add" @click="open()"></div>
-            <div class="iconfont iconic_tips add" @click="clear()"></div>
+            <div class="iconfont iconic_live_cover_change  iconfont-title" @click="open()"></div>
+            <div class="iconfont iconic_tips iconfont-title" @click="clear()"></div>
         </div>
         <div class="flex-wrap-left">
             <div @contextmenu="onSelectItem" class="item-img  flex-colume-center " v-for="(item,index ) in filePath" :key="index">
                 <img ref="img " class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
-                <div class="img-list pointer-cursor text-overflow-ellipsis" @click="toOpenWidnows(index)">
-                    {{item.filename}}</div>
+                <div class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
+                    <span @click.stop="copy(item.filename)" class="iconfont copy-item iconic_dailytasks5"></span>{{item.filename}}
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-const { ipcRenderer, shell } = require('electron');
+const { ipcRenderer, shell, clipboard } = require('electron');
 const { remote } = window.require('electron');
 import viewerjs from "../utils/viewer.min.js"
 var viewer = null;
@@ -83,6 +84,10 @@ export default {
             this.reset();
             ipcRenderer.send("open-message");
         },
+        copy (copyStr) {
+            clipboard.writeText(copyStr)
+            this.$toast(`复制${copyStr}成功`)
+        },
         clear () {
             this.reset();
             this.filePath = []
@@ -146,21 +151,27 @@ export default {
     overflow: auto;
     background: #292a2b;
 }
-.add {
-    font-size: 20px;
-    margin: 60px 40px 20px 40px;
-    cursor: pointer;
-}
-
-.item-img {
-    width: 200px;
-    margin: 10px;
-    img {
-        max-width: 100%;
+.photos-box {
+    width: 100%;
+    .iconfont-title {
+        font-size: 20px;
+        margin: 60px 40px 20px 40px;
+        cursor: pointer;
     }
-    .img-list {
+    .copy-item {
+        vertical-align: -2px;
+    }
+    .item-img {
         width: 200px;
-        text-align: center;
+        margin: 10px;
+        img {
+            max-width: 100%;
+        }
+        .img-list {
+            width: 200px;
+            text-align: center;
+            margin-top: 10px;
+        }
     }
 }
 </style>
