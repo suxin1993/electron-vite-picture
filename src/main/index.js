@@ -196,6 +196,7 @@ function fileDisplay(filePath, callback) {
                     list.push({
                         filePath: filedir,
                         filename: path.basename(filedir),
+                        ext: path.extname(filedir),
                     })
                 }
             });

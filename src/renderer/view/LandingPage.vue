@@ -13,8 +13,9 @@
                 <div v-else>
                     <input type="text" @change="changePhotoName(index)" v-model='item.filename'>
                 </div>
-                <div @click="toEdit(index)" class="flex-between">
-                    <span class="pointer-cursor">编辑</span>
+                <div class="flex-between">
+                    <span @click="toEdit(index)" class="pointer-cursor">编辑</span>
+                    <span @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
                 </div>
             </div>
         </div>
@@ -94,6 +95,13 @@ export default {
             clipboard.writeText(copyStr)
             this.$toast(`复制${copyStr}成功`)
         },
+        toSvgo (index) {
+            let worker = new Worker('src/renderer/work/svgo.js');
+            worker.postMessage(JSON.stringify(this.filePath[index]));
+            worker.onmessage = function (event) {
+                console.log(event)
+            };
+        },
         toEdit (index) {
             this.$set(this.filePath[index], "edit", !this.filePath[index].edit)
         },
@@ -108,7 +116,7 @@ export default {
         },
         changePhotoName (index) {
             this.$set(this.filePath[index], "edit", false)
-            var worker = new Worker('src/renderer/work/editName.js');
+            let worker = new Worker('src/renderer/work/editName.js');
             worker.postMessage(JSON.stringify(this.filePath[index]));
             worker.onmessage = function (event) {
                 console.log(event)
