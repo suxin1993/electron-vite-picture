@@ -7,8 +7,14 @@
         <div class="flex-wrap-left">
             <div @contextmenu="onSelectItem" class="item-img  flex-colume-center " v-for="(item,index ) in filePath" :key="index">
                 <img ref="img " class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
-                <div class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
+                <div v-if="!item.edit" class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
                     <span @click.stop="copy(item.filename)" class="iconfont copy-item iconic_dailytasks5"></span>{{item.filename}}
+                </div>
+                <div v-else>
+                    <input type="text" @change="changePhotoName(index)" v-model='item.filename'>
+                </div>
+                <div @click="toEdit(index)" class="flex-between">
+                    <span class="pointer-cursor">编辑</span>
                 </div>
             </div>
         </div>
@@ -88,6 +94,9 @@ export default {
             clipboard.writeText(copyStr)
             this.$toast(`复制${copyStr}成功`)
         },
+        toEdit (index) {
+            this.$set(this.filePath[index], "edit", !this.filePath[index].edit)
+        },
         clear () {
             this.reset();
             this.filePath = []
@@ -96,6 +105,14 @@ export default {
         onSelectItem (e) {
             console.error(e)
             this.$toast("右键")
+        },
+        changePhotoName (index) {
+            this.$set(this.filePath[index], "edit", false)
+            var worker = new Worker('src/renderer/work/editName.js');
+            worker.postMessage(JSON.stringify(this.filePath[index]));
+            worker.onmessage = function (event) {
+                console.log(event)
+            };
         },
         toOpenWidnows (index) {
             let file = this.filePath[index].filePath
