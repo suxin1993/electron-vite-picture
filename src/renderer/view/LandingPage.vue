@@ -12,7 +12,7 @@
         </div>
         <div class="flex-wrap-left">
             <div v-for="(item,index ) in filePath" :key="index">
-                <div v-if="extInclude.includes(item.ext)" @contextmenu="onSelectItem" class="item-img  flex-colume-center ">
+                <div v-if="extInclude.includes(item.ext)" @contextmenu="onSelectItem(index)" class="item-img  flex-colume-center ">
                     <img ref="img " class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
                     <div v-if="!item.edit" class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
                         <span @click.stop="copy(item.filename)" class="iconfont copy-item iconic_dailytasks5"></span>{{item.filename}}
@@ -77,6 +77,12 @@ export default {
                     // All methods are available here except "show".
                     // this.viewer.zoomTo(1).rotateTo(180);
                 },
+                move : function (e) {
+                    console.error("MOVE")
+                },
+                moveTo: function (e) {
+                    console.error("MOVETo")
+                },
                 hide: function (e) {
                     // console.error(e)
                     viewer.destroy()
@@ -128,8 +134,12 @@ export default {
         toReteType () {
             this.extInclude = Object.keys(this.extType)
         },
-        onSelectItem (e) {
-            console.error(e)
+        onSelectItem (index) {
+            // console.error(e)
+            console.error(colorjs)
+            colorjs.average(this.filePath[index].filePath).then(color => {
+                console.log(color)
+            })
             this.$toast("右键")
         },
         changePhotoName (index) {
@@ -165,6 +175,8 @@ export default {
         ipcRenderer.on('files-reply', (event, arg) => {
             // console.error(arg)
             this.filePath = []
+            this.extType = {}
+            this.extInclude= []
             for (let i in arg) {
                 arg[i].filePathF = 'file:///' + arg[i].filePath.replace(/\\/g, "/")
                 this.filePath.push(arg[i])
@@ -175,6 +187,15 @@ export default {
             this.reset()
             localStorage.setItem('fileList', JSON.stringify(this.filePath))
         });
+
+        this.$nextTick(() => {
+            const script = document.createElement('script')
+            script.src = 'src/renderer/utils/color.js'
+            document.body.appendChild(script)
+            script.onload = () => {
+            }
+        });
+
     }
 }
 </script>
