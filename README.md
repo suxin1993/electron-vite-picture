@@ -25,6 +25,35 @@
 
 ## 1.右键 3.分类 2.图片命名
 
+## 获取图片的大小
+
+## 获取图片的宽高
+```
+var img = document.getElementById("oImg"),
+　　w,h;
+
+if (oImg.naturalWidth) {
+　　// HTML5 browsers
+　　w = oImg.naturalWidth;
+　　h = oImg.naturalHeight;
+} else {
+　　// IE 6/7/8
+　　var nImg = new Image();
+//      nImg.src = oImg.src;
+　　nImg.onload = function () {
+　　　　w = nImg.width;
+　　　　h = nImg.height;
+　　　　console.log(w + "  " + h)
+　　}
+　　nImg.src = oImg.src;
+}
+```
+
+
+## 获取图片颜色
+```
+ canvas
+```
 
 ## 已经完成
 
