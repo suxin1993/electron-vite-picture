@@ -55,6 +55,8 @@ if (oImg.naturalWidth) {
  canvas
 ```
 
+## 压缩图片，通过canvas转化格式，然后sharp压缩，然后再转换回来
+
 ## 已经完成
 
 #### svgo

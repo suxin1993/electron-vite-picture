@@ -23,6 +23,7 @@
                     <div class="flex-between">
                         <span @click="toEdit(index)" class="pointer-cursor">编辑</span>
                         <span @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
+                        <span  v-if="item.ext=='.jpeg'"  @click="toCompression(index)">压缩图片</span>
                     </div>
                 </div>
             </div>
@@ -117,6 +118,13 @@ export default {
             worker.onmessage = function (event) {
                 console.log(event)
             };
+        },
+        toCompression(index){
+             let worker = new Worker('src/renderer/work/compressionImageJpg.js');
+            worker.postMessage(JSON.stringify(this.filePath[index]));
+            worker.onmessage = function (event) {
+                  console.log(event)
+            }
         },
         toEdit (index) {
             this.$set(this.filePath[index], "edit", !this.filePath[index].edit)
