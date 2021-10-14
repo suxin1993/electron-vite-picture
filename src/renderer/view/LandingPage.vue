@@ -13,8 +13,8 @@
         <div class="flex-wrap-left">
             <div v-for="(item,index ) in filePath" :key="index">
                 <div v-if="extInclude.includes(item.ext)" @contextmenu="onSelectItem(index)" class="item-img  flex-colume-center ">
-                    <img ref="img " class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
-                    <div v-if="!item.edit" class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
+                    <img ref="img" class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
+                    <div  v-if="!item.edit" class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
                         <span @click.stop="copy(item.filename)" class="iconfont copy-item iconic_dailytasks5"></span>{{item.filename}}
                     </div>
                     <div v-else>
@@ -151,7 +151,10 @@ export default {
             colorjs.average(this.filePath[index].filePath).then(color => {
                 console.log(color)
             })
-            this.$toast("右键")
+            //获取图片的宽度与高度
+            console.error(this.$refs['img'][index].naturalWidth)
+            
+            this.$toast(`宽高 : ${this.$refs['img'][index].naturalWidth}*${this.$refs['img'][index].naturalHeight}`)
         },
         changePhotoName (index) {
             this.$set(this.filePath[index], "edit", false)
