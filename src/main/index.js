@@ -193,7 +193,9 @@ function fileDisplay(filePath, callback) {
                     return res
                 }
                 if (isImg()) {
+                    const stats = fs.statSync(filedir);
                     list.push({
+                        size:stats.size,
                         filePath: filedir,
                         filename: path.basename(filedir),
                         ext: path.extname(filedir),

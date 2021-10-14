@@ -25,6 +25,9 @@
                         <span @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
                         <span  v-if="item.ext=='.jpeg'"  @click="toCompression(index)">压缩图片</span>
                     </div>
+                    <div>
+                        <span>{{+item.size/1024/1024}}M</span>
+                    </div>
                 </div>
             </div>
         </div>
