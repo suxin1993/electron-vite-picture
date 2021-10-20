@@ -149,6 +149,19 @@ ipcMain.on('files-monitoring', (e, arg) => {
         monitoring(pathParsePath(arg[0].filePath))
     }
 })
+// 在创建子进程，去压缩文件
+ipcMain.on('to-compression', (e, arg) => {
+    let child = child_process.fork('src/renderer/work/compressionImageJpg.js');
+    child.on('message', function(m) {
+        console.log('message from child: ' + JSON.stringify(m));
+
+    });
+    child.send(JSON.parse(arg));
+    child.on('exit', code => {
+        console.log("关闭子进程")
+        console.log('exit:', code);
+    });
+})
 
 //拖入文件
 ipcMain.on('files-message', function(e, arg) {
@@ -195,7 +208,7 @@ function fileDisplay(filePath, callback) {
                 if (isImg()) {
                     const stats = fs.statSync(filedir);
                     list.push({
-                        size:stats.size,
+                        size: stats.size,
                         filePath: filedir,
                         filename: path.basename(filedir),
                         ext: path.extname(filedir),
