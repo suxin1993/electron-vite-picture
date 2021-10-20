@@ -4,6 +4,7 @@
             <div class="iconfont iconic_live_cover_change  iconfont-title" @click="open()"></div>
             <div class="iconfont iconic_tips iconfont-title" @click="clear()"></div>
         </div>
+        <div @click="getQiniuToken()"> 获取七牛云token</div>
         <div>
             <span @click="toChangeType(item)" v-for="(item,index) in extType " :key="index">
                 {{item}}
@@ -14,7 +15,7 @@
             <div v-for="(item,index ) in filePath" :key="index">
                 <div v-if="extInclude.includes(item.ext)" @contextmenu="onSelectItem(index)" class="item-img  flex-colume-center ">
                     <img ref="img" class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
-                    <div  v-if="!item.edit" class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
+                    <div v-if="!item.edit" class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
                         <span @click.stop="copy(item.filename)" class="iconfont copy-item iconic_dailytasks5"></span>{{item.filename}}
                     </div>
                     <div v-else>
@@ -23,7 +24,8 @@
                     <div class="flex-between">
                         <span @click="toEdit(index)" class="pointer-cursor">编辑</span>
                         <span @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
-                        <span  v-if="item.ext=='.jpeg'"  @click="toCompression(index)">压缩图片</span>
+                        <span v-if="item.ext=='.jpeg'||item.ext=='.jpg'||item.ext=='.png'" @click="toCompression(index)">压缩图片</span>
+                        <span @click="toUpload(item.filePath,item.filename)">上传七牛</span>
                     </div>
                     <div>
                         <span>{{+item.size/1024/1024}}M</span>
@@ -38,6 +40,10 @@
 const { ipcRenderer, shell, clipboard } = require('electron');
 const { remote } = window.require('electron');
 import viewerjs from "../utils/viewer.min.js"
+const token = require('../utils/qiniu/qntoken')
+import tokendata from "../utils/qiniu/qiniu.json"
+const { readFile } = require('../utils/node-operate-folder')
+import { postQiNiuReander } from "../utils/qiniu/qiniuUpload.js"
 var viewer = null;
 export default {
     name: 'LandingPage',
@@ -46,6 +52,7 @@ export default {
             filePath: [],
             extType: {},
             extInclude: [],
+            qiniuUptoken: ""//七牛Token
         }
     },
     computed: {
@@ -81,7 +88,7 @@ export default {
                     // All methods are available here except "show".
                     // this.viewer.zoomTo(1).rotateTo(180);
                 },
-                move : function (e) {
+                move: function (e) {
                     console.error("MOVE")
                 },
                 moveTo: function (e) {
@@ -122,11 +129,14 @@ export default {
                 console.log(event)
             };
         },
-        toCompression(index){
-             let worker = new Worker('src/renderer/work/compressionImageJpg.js');
+        toCompression (index) {
+            ipcRenderer.send("to-compression", JSON.stringify(this.filePath[index]));
+            return
+            // work 进程会奔溃
+            let worker = new Worker('src/renderer/work/compressionImageJpg.js');
             worker.postMessage(JSON.stringify(this.filePath[index]));
             worker.onmessage = function (event) {
-                  console.log(event)
+                console.log(event)
             }
         },
         toEdit (index) {
@@ -153,7 +163,7 @@ export default {
             })
             //获取图片的宽度与高度
             console.error(this.$refs['img'][index].naturalWidth)
-            
+
             this.$toast(`宽高 : ${this.$refs['img'][index].naturalWidth}*${this.$refs['img'][index].naturalHeight}`)
         },
         changePhotoName (index) {
@@ -172,6 +182,25 @@ export default {
             remote.dialog.showOpenDialog(null, {
                 title: 'info', defaultPath: file, properties: ['openFile', 'multSelections']
             }).then(result => { })
+        },
+        getQiniuToken () {
+            this.qiniuUptoken = token.token(tokendata)
+        },
+        async toUpload (filePath, filename) {
+            let content = await readFile(filePath)
+            let blob = new Blob([content], { type: "image/jpeg" });
+            const file = new File(
+                [blob],
+                'pic.jpeg',
+                { type: 'image/jpeg' }
+            );
+            const key = await postQiNiuReander({
+                'file': file,
+                'token': this.qiniuUptoken,
+                'key': filename,
+                'fname': filename
+            })
+            console.log(key)
         }
     },
     created () {
@@ -190,7 +219,7 @@ export default {
             // console.error(arg)
             this.filePath = []
             this.extType = {}
-            this.extInclude= []
+            this.extInclude = []
             for (let i in arg) {
                 arg[i].filePathF = 'file:///' + arg[i].filePath.replace(/\\/g, "/")
                 this.filePath.push(arg[i])
