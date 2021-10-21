@@ -5,6 +5,7 @@
             <div class="iconfont iconic_tips iconfont-title" @click="clear()"></div>
         </div>
         <div @click="getQiniuToken()"> 获取七牛云token</div>
+        <div @click="compareSize()">按照大小排序</div>
         <div>
             <span @click="toChangeType(item)" v-for="(item,index) in extType " :key="index">
                 {{item}}
@@ -43,6 +44,7 @@ import viewerjs from "../utils/viewer.min.js"
 const token = require('../utils/qiniu/qntoken')
 import tokendata from "../utils/qiniu/qiniu.json"
 const { readFile } = require('../utils/node-operate-folder')
+import { compare } from "../utils/util"
 import { postQiNiuReander } from "../utils/qiniu/qiniuUpload.js"
 var viewer = null;
 export default {
@@ -122,6 +124,10 @@ export default {
             clipboard.writeText(copyStr)
             this.$toast(`复制${copyStr}成功`)
         },
+        // 按照大小排序
+        compareSize () {
+            this.filePath = this.filePath.sort(compare("size", false))
+        },
         toSvgo (index) {
             let worker = new Worker('src/renderer/work/svgo.js');
             worker.postMessage(JSON.stringify(this.filePath[index]));
@@ -130,6 +136,8 @@ export default {
             };
         },
         toCompression (index) {
+            this.filePath[index].height = this.$refs['img'][index].naturalHeight
+            this.filePath[index].width = this.$refs['img'][index].naturalWidth
             ipcRenderer.send("to-compression", JSON.stringify(this.filePath[index]));
             return
             // work 进程会奔溃
