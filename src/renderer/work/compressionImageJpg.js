@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-10-14 11:00:11
- * @LastEditTime: 2021-10-20 21:21:48
+ * @LastEditTime: 2021-10-21 17:46:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /electron-vite-picture/src/renderer/work/compressionImageJpg.js
@@ -34,7 +34,9 @@ if (false) {
         } else if (m.filePath) {
             const options = {
                 images: [m.filePath, m.filePath],
-                quality: 90
+                width: m.width,
+                height: m.height,
+                quality: 80
             };
             // Run the module.
             await resizeOptimizeImages(options);

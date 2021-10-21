@@ -197,7 +197,7 @@ function fileDisplay(filePath, callback) {
                 let filedir = path.join(filePath, filename);
                 let isImg = function() {
                     let res = false;
-                    let imgType = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'JPG', 'JPEG', 'PNG', 'GIF', 'ICO', 'svg'];
+                    let imgType = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'JPG', 'JPEG', 'PNG', 'GIF', 'ICO', 'svg', 'SVG', 'webp', 'WEBP'];
                     for (let i in imgType) {
                         if (filename.split(".")[1] == imgType[i]) {
                             res = true
