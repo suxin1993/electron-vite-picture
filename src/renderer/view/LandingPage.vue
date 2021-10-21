@@ -27,6 +27,7 @@
                         <span @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
                         <span v-if="item.ext=='.jpeg'||item.ext=='.jpg'||item.ext=='.png'" @click="toCompression(index)">压缩图片</span>
                         <span @click="toUpload(item.filePath,item.filename)">上传七牛</span>
+                        <span @click="moveItemToTrash(index)">删除文件</span>
                     </div>
                     <div>
                         <span>{{+item.size/1024/1024}}M</span>
@@ -46,6 +47,7 @@ import tokendata from "../utils/qiniu/qiniu.json"
 const { readFile } = require('../utils/node-operate-folder')
 import { compare } from "../utils/util"
 import { postQiNiuReander } from "../utils/qiniu/qiniuUpload.js"
+// shell 可以打开文件夹，打开外部链接，以默认打开方式打开文件.删除文件 shell.writeShortcutLink 创造快捷方式 只能windows用
 var viewer = null;
 export default {
     name: 'LandingPage',
@@ -146,6 +148,9 @@ export default {
             worker.onmessage = function (event) {
                 console.log(event)
             }
+        },
+        moveItemToTrash (index) {
+            shell.trashItem(this.filePath[index].filePath)
         },
         toEdit (index) {
             this.$set(this.filePath[index], "edit", !this.filePath[index].edit)

@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2021-10-14 11:00:11
+ * @LastEditTime: 2021-10-21 19:51:43
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /electron-vite-picture/README.md
+-->
 
 # electron 图片查看
 
@@ -48,6 +56,11 @@ if (oImg.naturalWidth) {
 　　nImg.src = oImg.src;
 }
 ```
+## 多层遍历
+
+## 搜索功能
+
+## 播放lottery动画与vap动画
 
 
 ## 获取图片颜色
@@ -61,3 +74,6 @@ if (oImg.naturalWidth) {
 
 #### svgo
 #### 可以分类
+
+
+
