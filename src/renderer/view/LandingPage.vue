@@ -14,7 +14,8 @@
         </div>
         <div class="flex-wrap-left">
             <div v-for="(item,index ) in filePath" :key="index">
-                <div v-if="extInclude.includes(item.ext)" @contextmenu="onSelectItem(index)" class="item-img  flex-colume-center ">
+                <div :style="`background: ${backgroundPic.index==index?backgroundPic.backgroundColor:''}`" v-if="extInclude.includes(item.ext)"
+                    @contextmenu="onSelectItem(index)" class="item-img  flex-colume-center ">
                     <img ref="img" class="pointer-cursor" :src="item.filePathF" @click="init()" :alt="item.filename" :title='item.filename'>
                     <div v-if="!item.edit" class="img-list pointer-cursor text-overflow-ellipsis" @click.prevent="toOpenWidnows(index)">
                         <span @click.stop="copy(item.filename)" class="iconfont copy-item iconic_dailytasks5"></span>{{item.filename}}
@@ -56,7 +57,11 @@ export default {
             filePath: [],
             extType: {},
             extInclude: [],
-            qiniuUptoken: ""//七牛Token
+            qiniuUptoken: "",//七牛Token
+            backgroundPic: {
+                backgroundColor: '',
+                index: undefined,
+            },//更换背景色
         }
     },
     computed: {
@@ -170,9 +175,10 @@ export default {
         },
         onSelectItem (index) {
             // console.error(e)
-            console.error(colorjs)
-            colorjs.average(this.filePath[index].filePath).then(color => {
-                console.log(color)
+            // console.error(colorjs)
+            colorjs.average(this.filePath[index].filePathF).then(color => {
+                this.backgroundPic.backgroundColor = `rgba(${color[0]},${color[1]},${color[2]},1)`
+                this.backgroundPic.index = index
             })
             //获取图片的宽度与高度
             console.error(this.$refs['img'][index].naturalWidth)
