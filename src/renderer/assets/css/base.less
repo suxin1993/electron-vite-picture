@@ -285,3 +285,32 @@ input {
         box-shadow: none;
     }
 }
+
+//确定样式
+.sure-button-hover {
+    width: 120px;
+    height: 40px;
+    background: rgba(66, 157, 255, 0.8);
+    border: none;
+    color: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+    margin-top: 5px;
+
+    &:hover {
+        background: #31aaff;
+        border: none;
+        color: rgba(255, 255, 255, 1);
+    }
+
+    &.sure-button-disabled {
+        pointer-events: none; //阻止点击
+        cursor: not-allowed; //鼠标阻止样式
+        background: rgba(255, 255, 255, 0.4);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    }
+}

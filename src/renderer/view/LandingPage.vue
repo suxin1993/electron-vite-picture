@@ -23,12 +23,13 @@
                     <div v-else>
                         <input type="text" @change="changePhotoName(index)" v-model='item.filename'>
                     </div>
-                    <div class="flex-between">
-                        <span @click="toEdit(index)" class="pointer-cursor">编辑</span>
-                        <span @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
-                        <span v-if="item.ext=='.jpeg'||item.ext=='.jpg'||item.ext=='.png'" @click="toCompression(index)">压缩图片</span>
-                        <span @click="toUpload(item.filePath,item.filename,item.ext)">上传七牛</span>
-                        <span @click="moveItemToTrash(index)">删除文件</span>
+                    <div class="flex-colume-center">
+                        <span class="sure-button-hover flex-colume-center" @click="toEdit(index)">编辑</span>
+                        <span class="sure-button-hover flex-colume-center" @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
+                        <span class="sure-button-hover flex-colume-center" v-if="item.ext=='.jpeg'||item.ext=='.jpg'||item.ext=='.png'"
+                            @click="toCompression(index)">压缩图片</span>
+                        <span class="sure-button-hover flex-colume-center" @click="toUpload(item.filePath,item.filename,item.ext)">上传七牛</span>
+                        <span class="sure-button-hover flex-colume-center" @click="moveItemToTrash(index)">删除文件</span>
                     </div>
                     <div>
                         <span>{{+item.size/1024/1024}}M</span>
