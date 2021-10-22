@@ -27,7 +27,7 @@
                         <span @click="toEdit(index)" class="pointer-cursor">编辑</span>
                         <span @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
                         <span v-if="item.ext=='.jpeg'||item.ext=='.jpg'||item.ext=='.png'" @click="toCompression(index)">压缩图片</span>
-                        <span @click="toUpload(item.filePath,item.filename)">上传七牛</span>
+                        <span @click="toUpload(item.filePath,item.filename,item.ext)">上传七牛</span>
                         <span @click="moveItemToTrash(index)">删除文件</span>
                     </div>
                     <div>
@@ -45,6 +45,11 @@ const { remote } = window.require('electron');
 import viewerjs from "../utils/viewer.min.js"
 const token = require('../utils/qiniu/qntoken')
 import tokendata from "../utils/qiniu/qiniu.json"
+// 示例
+//     "ak":”“,
+//     "sk": "",
+//     "bkt": "",
+//     "cdn": ""
 const { readFile } = require('../utils/node-operate-folder')
 import { compare } from "../utils/util"
 import { postQiNiuReander } from "../utils/qiniu/qiniuUpload.js"
@@ -205,21 +210,50 @@ export default {
         getQiniuToken () {
             this.qiniuUptoken = token.token(tokendata)
         },
-        async toUpload (filePath, filename) {
-            let content = await readFile(filePath)
-            let blob = new Blob([content], { type: "image/jpeg" });
+        async toUpload (filePath, filename, ext) {
+            // 通过render进程来读取一下图片数据，图片的大小不要太大
+            let content = null
+            let type = {
+                '.png': 'image/png',
+                '.PNG': 'image/png',
+                ".gif": "image/gif",
+                ".GIF": "image/gif",
+                '.WEBP': 'image/webp',
+                '.webp': 'image/webp',
+                '.jpg': 'image/jpeg',
+                '.JPG': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.JPEG': 'image/jpeg',
+                '.ico': 'image/x-icon',
+                '.ICO': 'image/x-icon',
+                '.svg': 'text/xml',
+                '.SVG': 'text/xml',
+            }
+            // 类型需要去查找后-http://tools.jb51.net/table/http_content_type/
+            try {
+                content = await readFile(filePath)
+            } catch (error) {
+                console.error(error)
+                this.$toast(`读取文件失败`)
+                return
+            }
+            let blob = new Blob([content], { type: type[ext] });
             const file = new File(
                 [blob],
-                'pic.jpeg',
-                { type: 'image/jpeg' }
+                filename,
+                { type: type[ext] }
             );
             const key = await postQiNiuReander({
                 'file': file,
                 'token': this.qiniuUptoken,
-                'key': filename,
+                'key': `upload/electron/${filename}`,
                 'fname': filename
             })
-            console.log(key)
+            if (key) {
+                console.log(JSON.parse(key).key)
+                this.$toast(`https://${tokendata.cdn}/${JSON.parse(key).key
+                    }`)
+            }
         }
     },
     created () {
@@ -257,7 +291,8 @@ export default {
             script.onload = () => {
             }
         });
-
+        // 获取七牛token
+        this.getQiniuToken()
     }
 }
 </script>
