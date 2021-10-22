@@ -1,14 +1,14 @@
 /*
  * @Author: your name
  * @Date: 2021-10-14 11:00:11
- * @LastEditTime: 2021-10-21 17:46:38
+ * @LastEditTime: 2021-10-22 10:51:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /electron-vite-picture/src/renderer/work/compressionImageJpg.js
  */
 // work 进程
 // const { writeFileAsync, readFile } = require('./src/renderer/utils/node-operate-folder.js')
-const { writeFileAsync, readFile } = require('../utils/node-operate-folder')
+// const { writeFileAsync, readFile } = require('../utils/node-operate-folder')
 const resizeOptimizeImages = require('resize-optimize-images');
 
 
