@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-10-09 10:24:50
- * @LastEditTime: 2021-10-09 13:41:57
+ * @LastEditTime: 2021-10-22 17:34:49
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /electron-vite-picture/src/main/child/child.js
@@ -19,8 +19,11 @@ process.on('message', function(m) {
                 }, 1000);
                 console.log(`${process.pid} name${filename} file ${event}`);
                 if (event == 'rename') {
-
                     process.send({ dirPath: m.dirPath })
+                } else if (event == 'change') {
+                    setTimeout(() => {
+                        process.send({ dirPath: m.dirPath })
+                    }, 1000);
                 }
                 // 性能不好，有变化，直接遍历，fs模块，不停的IO读写
             }

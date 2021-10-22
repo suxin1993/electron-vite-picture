@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-10-14 11:00:11
- * @LastEditTime: 2021-10-21 19:51:43
+ * @LastEditTime: 2021-10-22 19:52:08
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /electron-vite-picture/README.md
@@ -20,22 +20,41 @@
 
 ## 获取七牛云中的文件
 
-
-
-## 图片压缩png
-
-## 图片压缩jpg
-
 ## 打包成为zip文件
 
 ## 截图
 
+## 颜色拾取器
 
-## 1.右键 3.分类 2.图片命名
 
-## 获取图片的大小
+## 右键 
 
-## 获取图片的宽高
+## 图片命名
+
+
+
+
+
+
+## 搜索功能
+
+## 播放lottery动画与vap动画
+
+
+
+
+## 通过sharp对图片操作
+
+## 无法完成
+#### 无法监视子文件的改变
+
+## 已经完成
+#### svgo
+#### 可以分类
+#### 压缩图片
+#### 上传七牛云
+#### 获取图片的大小
+#### 获取图片的宽高
 ```
 var img = document.getElementById("oImg"),
 　　w,h;
@@ -56,24 +75,10 @@ if (oImg.naturalWidth) {
 　　nImg.src = oImg.src;
 }
 ```
-## 多层遍历
-
-## 搜索功能
-
-## 播放lottery动画与vap动画
-
-
-## 获取图片颜色
+#### 获取图片颜色
 ```
  canvas
 ```
-
-## 压缩图片，通过canvas转化格式，然后sharp压缩，然后再转换回来
-
-## 已经完成
-
-#### svgo
-#### 可以分类
 
 
 

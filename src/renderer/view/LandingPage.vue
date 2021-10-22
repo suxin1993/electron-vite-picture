@@ -10,7 +10,7 @@
             <span @click="toChangeType(item)" v-for="(item,index) in extType " :key="index">
                 {{item}}
             </span>
-            <span @click="toReteType()"> 全部</span>
+            <span @click="toReteType()"> 全部{{filePath.length}}</span>
         </div>
         <div class="flex-wrap-left">
             <div v-for="(item,index ) in filePath" :key="index">
@@ -32,7 +32,7 @@
                         <span class="sure-button-hover flex-colume-center" @click="moveItemToTrash(index)">删除文件</span>
                     </div>
                     <div>
-                        <span>{{+item.size/1024/1024}}M</span>
+                        <span>{{+item.size|picture-size}}</span>
                     </div>
                 </div>
             </div>
@@ -68,6 +68,7 @@ export default {
                 backgroundColor: '',
                 index: undefined,
             },//更换背景色
+            isCompare: false,
         }
     },
     computed: {
@@ -152,6 +153,12 @@ export default {
             this.filePath[index].height = this.$refs['img'][index].naturalHeight
             this.filePath[index].width = this.$refs['img'][index].naturalWidth
             ipcRenderer.send("to-compression", JSON.stringify(this.filePath[index]));
+            let size = this.filePath[index].size
+            console.error(this.filePath[index].size)
+            setTimeout(() => {
+                this.$toast(`压缩比例${this.filePath[index].size / size}`)
+            }, 5000)
+            // 获取压缩前的大小与压缩后的大小
             return
             // work 进程会奔溃
             let worker = new Worker('src/renderer/work/compressionImageJpg.js');
@@ -310,14 +317,15 @@ export default {
 <style scoped lang="less">
 #photos {
     width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: auto;
+    height: calc(~"100vh - 50px");
+    // position: fixed;
+    // top: 0;
+    // left: 0;
+    // right: 0;
+    // bottom: 0;
+    // overflow: auto;
     background: #292a2b;
+    overflow-y: scroll;
 }
 .photos-box {
     width: 100%;

@@ -142,7 +142,7 @@ ipcMain.on('open-message', function(e, arg) {
         console.log(err)
     })
 });
-const { pathParsePath } = require('../renderer/utils/node-operate-folder')
+const { pathParsePath, getbaseTypeFiles } = require('../renderer/utils/node-operate-folder')
 // 创建的时候，监控文件夹
 ipcMain.on('files-monitoring', (e, arg) => {
     if (arg[0] && arg[0].filePath) {
@@ -184,38 +184,24 @@ ipcMain.on('files-message', function(e, arg) {
     }
 });
 // 文件遍历
-function fileDisplay(filePath, callback) {
+async function fileDisplay(filePath, callback) {
     //根据文件路径读取文件，返回文件列表
-    fs.readdir(filePath, function(err, files) {
-        if (err) {
-            console.warn(err)
-        } else {
-            //遍历读取到的文件列表
-            let list = []
-            files.forEach(function(filename) {
-                //获取当前文件的绝对路径
-                let filedir = path.join(filePath, filename);
-                let isImg = function() {
-                    let res = false;
-                    let imgType = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'JPG', 'JPEG', 'PNG', 'GIF', 'ICO', 'svg', 'SVG', 'webp', 'WEBP'];
-                    for (let i in imgType) {
-                        if (filename.split(".")[1] == imgType[i]) {
-                            res = true
-                        }
-                    }
-                    return res
-                }
-                if (isImg()) {
-                    const stats = fs.statSync(filedir);
-                    list.push({
-                        size: stats.size,
-                        filePath: filedir,
-                        filename: path.basename(filedir),
-                        ext: path.extname(filedir),
-                    })
-                }
-            });
-            callback(list);
-        }
-    });
+    let list = []
+    let imgType = ['.png', '.jpg', '.jpeg', '.gif', '.ico', '.JPG', '.JPEG', '.PNG', '.GIF', '.ICO', '.svg', '.SVG', '.webp', '.WEBP'];
+    const filePathList = getbaseTypeFiles(filePath, imgType)
+
+    filePathList.forEach((filedir) => {
+        const stats = fs.statSync(filedir);
+        list.push({
+            size: stats.size,
+            filePath: filedir,
+            filename: path.basename(filedir),
+            ext: path.extname(filedir),
+        })
+
+    })
+    callback(list)
+
+
+    return list
 }
