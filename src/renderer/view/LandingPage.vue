@@ -30,6 +30,7 @@
                             @click="toCompression(index)">压缩图片</span>
                         <span class="sure-button-hover flex-colume-center" @click="toUpload(item.filePath,item.filename,item.ext)">上传七牛</span>
                         <span class="sure-button-hover flex-colume-center" @click="moveItemToTrash(index)">删除文件</span>
+                        <span class="sure-button-hover flex-colume-center" @click="toChangPhoto(index)">编辑照片</span>
                     </div>
                     <div>
                         <span>{{+item.size|picture-size}}</span>
@@ -37,6 +38,7 @@
                 </div>
             </div>
         </div>
+        <edit-name-modal></edit-name-modal>
     </div>
 </template>
 
@@ -177,6 +179,9 @@ export default {
             this.reset();
             this.filePath = []
             localStorage.setItem('fileList', JSON.stringify(this.filePath))
+        },
+        toChangPhoto () {
+            this.$store.commit('File/UPDATE_EDITNAME_MODAL', true)
         },
         toChangeType (ext) {
             console.error(this.extInclude)

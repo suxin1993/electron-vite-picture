@@ -19,7 +19,6 @@ export default {
     data () {
         return {
             visible: false,
-            escId: null
         }
     },
     // model: {    // 使用model， 这儿2个属性，prop属性说，我要将msg作为该组件被使用时（此处为aa组件被父组件调用）v-model能取到的值，event说，我emit ‘cc’ 的时候，参数的值就是父组件v-model收到的值。
@@ -101,13 +100,9 @@ export default {
         },
         visible (val) {
             if (val === false) {
-                this.timer = setTimeout(() => {
-                    myApp.utils.stackForEsc.removeWithNoInvoke(this.escId)
-                }, 300)
+
             } else {
-                if (this.closable) {
-                    this.escId = myApp.utils.stackForEsc.push({ fun: this.close })
-                }
+
             }
             this.$emit('on-visible-change', val);
         },
@@ -167,9 +162,7 @@ export default {
             document.querySelector("body").removeChild(document.querySelector(`.${this.className}-mask`))
         }
         document.removeEventListener('keydown', this.EscClose)
-        if (this.escId) {
-            myApp.utils.stackForEsc.removeWithNoInvoke(this.escId)
-        }
+
     },
 };
 </script>
@@ -182,10 +175,12 @@ export default {
     top: 0;
     left: 0;
     z-index: 1000;
+    background: rgba(0, 0, 0, 0.8);
     // backdrop-filter: blur(30px);
     .common-modal-mask-body {
         display: inline-block;
         background: #292a2b;
+        border-radius: 16px;
         animation: scaleTo1 ease 0.4s both;
         opacity: 0;
         @keyframes scaleTo1 {

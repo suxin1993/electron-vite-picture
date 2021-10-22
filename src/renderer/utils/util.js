@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-10-21 17:22:50
- * @LastEditTime: 2021-10-21 17:22:50
+ * @LastEditTime: 2021-10-22 21:51:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /electron-vite-picture/src/renderer/utils/util.js

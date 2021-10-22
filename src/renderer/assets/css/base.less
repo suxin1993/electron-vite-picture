@@ -314,3 +314,72 @@ input {
         }
     }
 }
+
+
+// 取消与确定
+.submit-box {
+    text-align: left;
+    height: 62px;
+    font-size: 18px;
+    margin-top: 12px;
+    border-radius: 0 0 10px 10px;
+
+    .cancel-btn {
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.8);
+        display: inline-block;
+        width: 120px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        border-radius: 8px;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    }
+
+    .submit-btn {
+        display: inline-block;
+        cursor: pointer;
+        margin-left: 20px;
+        margin-right: 20px;
+
+        &.no-margin {
+            margin-right: 0px;
+        }
+
+        background: rgba(66, 157, 255, 0.8);
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 1);
+        width: 120px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+
+        &:hover {
+            background: #31aaff;
+        }
+
+        &.loading-disabled {
+            pointer-events: none; //阻止点击
+            cursor: pointer; //鼠标阻止样式
+            background: rgba(66, 157, 255, 0.8);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        &.is-disabled {
+            pointer-events: none; //阻止点击
+            cursor: pointer; //鼠标阻止样式
+            background: rgba(255, 255, 255, 0.5);
+            ;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+        }
+    }
+}
