@@ -3,7 +3,7 @@ let filepath = pathJoinDir(__dirname, './')
 
 const { getGaodeAdress, ToDigital, GPS } = require("./gaodeLocation")
 const { getExifInfo } = require("./exif")
-
+const LogStore =require('../utils/main-myappFucntion')
 
 
 // exif信息中特殊的时间转换
@@ -59,11 +59,9 @@ async function reback(e) {
 }
 
 let mapName = {}
-async function photo() {
-    let list = getbaseTypeFiles(filepath, [".jpg", ".jpeg"])
+async function photo(list,editName) {
     if (list.length == 0) {
-        console.log(`路径下不存在jpg文件`.bold.red);
-        return '路径下不存在jpg文件'
+        console.log(`路径下不存在jpg文件`);
     } else {
         for (let index = 0; index < list.length; index++) {
             let addInforesp = 'noAddress'
@@ -86,32 +84,36 @@ async function photo() {
                     reback(e)
                     continue
                 }
+                console.error(process.argv[4])
                 incident = process.argv[4]
+            }
+            if(editName){
+                incident = editName
             }
             if (Shooting == 0) {
                 Shooting = await getStat(e)
                 Shooting = new Date(Shooting.mtime).valueOf()
-                console.log('文件的修改时间:' + window.myApp.LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒').bold.blue)
+                console.log('文件的修改时间:' + LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒'))
             }
             let wexinTime = fomtWexin(oldName, ['mmexport', 'wx_camera_', ])
             if (wexinTime) {
                 Shooting = wexinTime
-                console.log(oldName + '微信名字中的时间' + window.myApp.LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒').bold.blue)
+                console.log(oldName + '微信名字中的时间' + LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒'))
             }
             try {
                 //获取exif信息
                 exifFileDate = await getExifInfo(e)
             } catch (error) {
-                console.log(`${e}文件不存在exif信息`.bold.red);
+                console.log(`${e}文件不存在exif信息`);
             }
             try {
 
                 if (exifFileDate.image.ModifyDate) {
                     Shooting = new Date(reBackTime(exifFileDate.image.ModifyDate)).valueOf()
-                    console.log('拍摄时间:' + window.myApp.LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒').bold.blue)
+                    console.log('拍摄时间:' + LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒'))
                 } else if (exifFileDate.exif.DateTimeOriginal) {
                     Shooting = new Date(reBackTime(exifFileDate.exif.DateTimeOriginal)).valueOf()
-                    console.log('拍摄时间:' + window.myApp.LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒').bold.blue)
+                    console.log('拍摄时间:' + LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒'))
                 }
                 if (exifFileDate.image.Make) {
                     exifFileDate.image.Make = clearString(exifFileDate.image.Make);
@@ -129,27 +131,27 @@ async function photo() {
 
             } catch (error) {
                 addInforesp = '无GPS'
-                console.log(`${e}文件不存在GPS信息`.bold.red);
+                console.log(`${e}文件不存在GPS信息`);
             }
-            Stime = window.myApp.LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒')
+            Stime = LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒')
             let newFileRamaparsed = `${Stime}-pe[${incident}]-ad[${addInforesp}]-[${Make}]`
             if (mapName.hasOwnProperty(newFileRamaparsed)) {
-                console.log(`重复的时间: ${ Stime }`.bold.red)
+                console.log(`重复的时间: ${ Stime }`)
                 const randomEntryTime = Math.floor(Math.random() * 45000 + 15000)
                 Shooting = Shooting + randomEntryTime
-                Stime = window.myApp.LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒')
-                console.log(`修改后的时间: ${ Stime }`.bold.red)
+                Stime = LogStore.formatTime(Shooting, 'yyyy.MM.dd-hh时mm分ss秒')
+                console.log(`修改后的时间: ${ Stime }`)
                 newFileRamaparsed = `${Stime}-pe[${incident}]-ad[${addInforesp}]-[${Make}]`
                 mapName[newFileRamaparsed] = true
             } else {
                 mapName[newFileRamaparsed] = true
             }
-            let addOldnewFileRamaparsed = `${oldName}]oldname-${newFileRamaparsed}`
+            let addOldnewFileRamaparsed = `${newFileRamaparsed}`
             // // 修改名字
             let newFileName = pathJoinDir(parePath, `${addOldnewFileRamaparsed}${ext}`)
             console.error(newFileName)
             if (oldName.indexOf('oldname') !== -1) {
-                console.log(`${e}文件名存在oldname，不修改`.bold.red);
+                console.log(`${e}文件名存在oldname，不修改`);
             } else {
                 await renamePath(e, newFileName)
             }

@@ -12,7 +12,6 @@
         <div class="edit-name-modal-main">
             <p class="font-sixteen flex-colume-center edit-name-modal-title">修改名字</p>
             <input type="text" v-model="name" placeholder="修改的名字">
-
         </div>
         <div class="submit-box flex-right">
             <span class="cancel-btn pointer-cursor" @click="toClose">取消</span>
@@ -43,12 +42,27 @@ export default {
     methods: {
         onVisibleChange (val) {
             this.$store.commit('File/UPDATE_EDITNAME_MODAL', val)
+            if(!val){
+                this.$store.commit('File/COMMON_STORE', {
+                    key:'selectList',
+                    value:[]
+                })
+            }
         },
         toClose () {
             this.$store.commit('File/UPDATE_EDITNAME_MODAL', false)
         },
         submit () {
-
+            let worker = new Worker('src/renderer/work/photoEditName.js');
+            let fileInfo={
+                "selectList":this.$store.state.File.selectList,
+                "fileName": this.name
+            }
+            worker.postMessage(JSON.stringify( fileInfo));
+            worker.onmessage = function (event) {
+                console.log(event)
+            }
+            this.toClose()
         },
 
     }

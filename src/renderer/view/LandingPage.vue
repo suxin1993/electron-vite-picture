@@ -180,8 +180,14 @@ export default {
             this.filePath = []
             localStorage.setItem('fileList', JSON.stringify(this.filePath))
         },
-        toChangPhoto () {
+        toChangPhoto (index) {
             this.$store.commit('File/UPDATE_EDITNAME_MODAL', true)
+            let list =[]
+            list.push(this.filePath[index].filePath)
+            this.$store.commit('File/COMMON_STORE', {
+                key:'selectList',
+                value:list
+            })  
         },
         toChangeType (ext) {
             console.error(this.extInclude)

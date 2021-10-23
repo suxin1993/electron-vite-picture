@@ -10,6 +10,7 @@
 const state = {
     filPath: [],
     editNameModal: false,
+    selectList:[],
 }
 
 const mutations = {
@@ -18,6 +19,9 @@ const mutations = {
     },
     UPDATE_EDITNAME_MODAL(state, query) {
         state.editNameModal = query
+    },
+    COMMON_STORE(state, query) {
+        state[query.key]=query.value
     }
 }
 
