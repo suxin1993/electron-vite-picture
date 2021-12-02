@@ -26,6 +26,7 @@
                     <div class="flex-colume-center">
                         <span class="sure-button-hover flex-colume-center" @click="toEdit(index)">编辑</span>
                         <span class="sure-button-hover flex-colume-center" @click="toSvgo(index)" v-if="item.ext=='.svg'">svgo</span>
+                        <span class="sure-button-hover flex-colume-center" @click="toSvgToPng(index)" v-if="item.ext=='.svg'">svgtoPng</span>
                         <span class="sure-button-hover flex-colume-center" v-if="item.ext=='.jpeg'||item.ext=='.jpg'||item.ext=='.png'"
                             @click="toCompression(index)">压缩图片</span>
                         <span class="sure-button-hover flex-colume-center" @click="toUpload(item.filePath,item.filename,item.ext)">上传七牛</span>
@@ -151,6 +152,13 @@ export default {
                 console.log(event)
             };
         },
+        toSvgToPng (index) {
+            let worker = new Worker('src/renderer/work/svgtoPng.js');
+            worker.postMessage(JSON.stringify(this.filePath[index]));
+            worker.onmessage = function (event) {
+                console.log(event)
+            };
+        },
         toCompression (index) {
             this.filePath[index].height = this.$refs['img'][index].naturalHeight
             this.filePath[index].width = this.$refs['img'][index].naturalWidth
@@ -182,12 +190,12 @@ export default {
         },
         toChangPhoto (index) {
             this.$store.commit('File/UPDATE_EDITNAME_MODAL', true)
-            let list =[]
+            let list = []
             list.push(this.filePath[index].filePath)
             this.$store.commit('File/COMMON_STORE', {
-                key:'selectList',
-                value:list
-            })  
+                key: 'selectList',
+                value: list
+            })
         },
         toChangeType (ext) {
             console.error(this.extInclude)
