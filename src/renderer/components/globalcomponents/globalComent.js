@@ -1,10 +1,10 @@
 /*
  * @Author: your name
  * @Date: 2021-07-16 20:07:57
- * @LastEditTime: 2021-10-09 17:28:47
+ * @LastEditTime: 2021-12-09 16:54:37
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
- * @FilePath: /tt-desktop/src/renderer/components/globalcomponents/globalComent.js
+ * @FilePath: /src/renderer/globalComent.js
  */
 import Vue from 'vue'
 
